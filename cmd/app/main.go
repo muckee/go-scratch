@@ -12,6 +12,7 @@ import (
 var public embed.FS
 
 func main() {
+
   // We want to serve static content from the root of the 'public' directory,
   // but go:embed will create a FS where all the paths start with 'public/...'.
   // Using fs.Sub we "cd" into 'public' and can serve files relative to it.
@@ -20,10 +21,10 @@ func main() {
     log.Fatal(err)
   }
 
+  // Determine whether to use the default port `9223` or the value of the `GOLANG_PORT` environment variable
+  port := ":9223"
   val, portIsSet := os.LookupEnv("GOLANG_PORT")
-  if !portIsSet {
-    port := ":9223"
-  } else {
+  if portIsSet {
     port := `:{{ val }}`
   }
 
