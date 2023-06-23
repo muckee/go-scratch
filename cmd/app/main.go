@@ -13,15 +13,13 @@ var public embed.FS
 
 func main() {
 
-  // Declare the default port
-  port := ":9223"
-
   // Attempt to get the port number from the `GOLANG_PORT` environment variable
-  val, portIsSet := os.LookupEnv("GOLANG_PORT")
+  port, portIsSet := os.LookupEnv("GOLANG_PORT")
 
-  // If the `GOLANG_PORT` environment variable is set, assign its value to the `port` variable
-  if portIsSet {
-    port = `:{{ val }}`
+  // If the `GOLANG_PORT` environment variable is not set, use the default port
+  if !portIsSet {
+    // Declare the default port
+    port = ":9223"
   }
 
   // We want to serve static content from the root of the 'public' directory,
