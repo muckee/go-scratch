@@ -12,13 +12,7 @@ import (
 var public embed.FS
 
 // Determine whether to use the default port `9223` or the value of the `GOLANG_PORT` environment variable
-var port := ":9223"
-
-val, portIsSet := os.LookupEnv("GOLANG_PORT")
-
-if portIsSet {
-  port := `:{{ val }}`
-}
+var port = ":9223"
 
 func main() {
 
@@ -28,6 +22,13 @@ func main() {
   publicFS, err := fs.Sub(public, "public")
   if err != nil {
     log.Fatal(err)
+  }
+
+  // If a custom port number is stored in the `GOLANG_PORT` environment variable, then use it instead of the default port number
+  val, portIsSet := os.LookupEnv("GOLANG_PORT")
+
+  if portIsSet {
+    port := `:{{ val }}`
   }
 
   http.Handle("/", http.FileServer(http.FS(publicFS)))
