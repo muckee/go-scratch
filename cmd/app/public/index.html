@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>React Go server example</title>
+
+    <style>
+      .copy {
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <header>
+
+      <h1>Thugnerdz' React Go scratch image</h1>
+
+    </header>
+
+    <main>
+
+      <h2>Hello, nerd. It's working!</h2>
+
+      <article>
+
+        <h3>Setup & configuration guide</h3>
+
+        <p>
+        <small>
+        <b>
+          This article assumes that you are running this application within
+          a properly-configured environment.
+        </b>
+        </small>
+        <br>
+        <small>
+        <b>
+          The compiled image is designed to serve static content only.
+          If you are attempting to serve anything more complex than an HTML
+          website, you will probably need to create your own repository
+          which extends this image, with your own customisations.
+        </b>
+        </small>
+        </p>
+
+        <section>
+          <h4>
+            How to serve your own website
+          </h4>
+
+          <p>
+            In order to serve your own content, replace the contents of the
+            '<code>/cmd/app/public</code>' folder with the files you wish
+            to serve.
+          </p>
+  
+          <p>
+            When running this server in a container, it is typically easiest
+            to mount an external volume which contains your content at the
+            location '<code>/cmd/app/public</code>'.
+          </p>
+
+          <p>
+            If you can access this webpage from your frontend, then any static
+            content which you add to the public folder should be available,
+            provided that the environment is configured correctly.
+          </p>
+
+        </section>
+
+      </article>
+
+    </main>
+
+    <footer>
+
+      <p>
+        If you need assistance, don't hesitate to get in touch by using
+        our contact details, or via any of our social media!
+      </p>
+
+      <!--    TODO: Add contact details here.    -->
+
+      <p class='copy'>
+      <small>
+        Copyright &copy; <span id='copyrightYear'>2023</span> Thugnerdz.
+        All rights reserved.
+      </small>
+      </p>
+
+    </footer>
+
+    <script>
+      // Update the copyright year
+      document.getElementById('copyrightYear').innerHTML = new Date().getFullYear();
+    </script>
+
+  </body>
+</html>
