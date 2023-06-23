@@ -2,6 +2,7 @@ package main
 
 import (
   "embed"
+  "fmt"
   "io/fs"
   "log"
   "net/http"
@@ -34,5 +35,5 @@ func main() {
 
   // Serve the static content
   // The return value of the `http.ListenAndServe()` command is always logged as a fatal error
-  log.Fatal(http.ListenAndServe(`:{{port}}`, nil))
+  log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
