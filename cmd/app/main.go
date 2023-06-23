@@ -5,6 +5,7 @@ import (
   "io/fs"
   "log"
   "net/http"
+  "os"
 )
 
 //go:embed public
@@ -19,8 +20,14 @@ func main() {
     log.Fatal(err)
   }
 
+  val, portIsSet := os.LookupEnv("GOLANG_PORT")
+  if !portIsSet {
+    port := ":9223"
+  } else {
+    port := `:{{ val }}`
+  }
+
   http.Handle("/", http.FileServer(http.FS(publicFS)))
 
-  port := ":9223"
   log.Fatal(http.ListenAndServe(port, nil))
 }
