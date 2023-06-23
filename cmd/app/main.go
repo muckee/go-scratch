@@ -11,6 +11,15 @@ import (
 //go:embed public
 var public embed.FS
 
+// Determine whether to use the default port `9223` or the value of the `GOLANG_PORT` environment variable
+var port := ":9223"
+
+val, portIsSet := os.LookupEnv("GOLANG_PORT")
+
+if portIsSet {
+  port := `:{{ val }}`
+}
+
 func main() {
 
   // We want to serve static content from the root of the 'public' directory,
@@ -19,13 +28,6 @@ func main() {
   publicFS, err := fs.Sub(public, "public")
   if err != nil {
     log.Fatal(err)
-  }
-
-  // Determine whether to use the default port `9223` or the value of the `GOLANG_PORT` environment variable
-  port := ":9223"
-  val, portIsSet := os.LookupEnv("GOLANG_PORT")
-  if portIsSet {
-    port := `:{{ val }}`
   }
 
   http.Handle("/", http.FileServer(http.FS(publicFS)))
