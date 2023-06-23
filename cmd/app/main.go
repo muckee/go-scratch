@@ -18,13 +18,10 @@ func main() {
 
   // If the `GOLANG_PORT` environment variable is not set, use the default port
   if !portIsSet {
-    // Declare the default port
-    port = ":9223"
+    port = "9223"
   }
 
-  // We want to serve static content from the root of the 'public' directory,
-  // but go:embed will create a FS where all the paths start with 'public/...'.
-  // Using fs.Sub we "cd" into 'public' and can serve files relative to it.
+  // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
   publicFS, err := fs.Sub(public, "public")
 
   // Throw an error if the filesystem cannot be created
@@ -32,9 +29,10 @@ func main() {
     log.Fatal(err)
   }
 
-  // Serve the filesystem under the root path
+  // Point the root endpoint at the filesystem created from the 'public' directory
   http.Handle("/", http.FileServer(http.FS(publicFS)))
 
-  // If the service fails, log the service
-  log.Fatal(http.ListenAndServe(port, nil))
+  // Serve the static content
+  // The return value of the `http.ListenAndServe()` command is always logged as a fatal error
+  log.Fatal(http.ListenAndServe(`:{{ port }}`, nil))
 }
