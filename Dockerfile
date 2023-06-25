@@ -2,8 +2,8 @@ ARG GO_VERSION=1.20
  
 # STAGE 1: building the executable
 FROM golang:${GO_VERSION}-alpine AS build
-RUN apk add --no-cache git
-RUN apk --no-cache add ca-certificates
+RUN apk add --no-cache git \
+                       ca-certificates
  
 # Add user here. Cannot be added in scratch
 RUN addgroup -S myapp \
