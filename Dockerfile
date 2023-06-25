@@ -15,6 +15,7 @@ COPY ./go.mod ./
 RUN go mod download
 
 COPY ./ ./
+ONBUILD COPY ./public ./cmd/app/public
  
 # Run tests
 # RUN CGO_ENABLED=0 go test -timeout 30s -v github.com/gbaeke/go-template/pkg/api
