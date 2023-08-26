@@ -28,7 +28,7 @@ COPY ./ ./
 # STAGE 2: build the container to run
 FROM scratch AS final
 
-COPY --from=build /cmd/app /app
+COPY --from=build /src/cmd/app /app
  
 # copy ca certs
 # COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
