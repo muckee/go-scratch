@@ -31,11 +31,11 @@ FROM scratch AS final
 COPY --from=build /src/cmd/app /app
  
 # copy ca certs
-# COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
  
 # copy users from builder (use from=0 for illustration purposes)
-# COPY --from=0 /etc/passwd /etc/passwd
- 
+COPY --from=0 /etc/passwd /etc/passwd
+
 USER goserver
  
 ENTRYPOINT ["go run", "/app/main.go"]
