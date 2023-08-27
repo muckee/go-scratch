@@ -12,6 +12,14 @@ import (
 //go:embed public
 var public embed.FS
 
+// exists returns whether the given file or directory exists
+func exists(path string) (bool, error) {
+    _, err := os.Stat(path)
+    if err == nil { return true, nil }
+    if os.IsNotExist(err) { return false, nil }
+    return false, err
+}
+
 func main() {
 
   // Attempt to get the port number from the `GOLANG_PORT` environment variable
@@ -22,8 +30,26 @@ func main() {
     port = "9223"
   }
 
-  // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
-  publicFS, err := fs.Sub(public, "public")
+  // Attempt to get the build directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable
+  staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
+
+  // If the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable is not set, use the default static content directory
+  if !staticContentDirectoryIsSet {
+    staticContentDirectory = "/static"
+  }
+
+  staticContentDirectoryExists, err := exists(staticContentDirectory)
+
+  if staticContentDirectoryExists {
+
+      // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
+      publicFS, err := fs.Sub(public, staticContentDirectory)
+    
+  } else {
+
+      // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
+      publicFS, err := fs.Sub(public, "public")
+  }
 
   // Throw an error if the filesystem cannot be created
   if err != nil {
