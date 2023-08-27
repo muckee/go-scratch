@@ -1,5 +1,4 @@
 ARG GO_VERSION=1.20
-ARG USER_NAME=goserver
  
 # STAGE 1: building the executable
 FROM golang:${GO_VERSION}-alpine AS build
@@ -7,7 +6,7 @@ RUN apk add --no-cache git \
                        ca-certificates
  
 # Add user here. Cannot be added in scratch
-RUN [ "sh", "-c", "addgroup -S $USER_NAME && adduser -S -u 10000 -g $USER_NAME $USER_NAME" ]
+RUN [ "sh", "-c", "addgroup -S goserver && adduser -S -u 10000 -g goserver goserver" ]
 
 # Install Go modules
 WORKDIR /src
