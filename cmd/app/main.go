@@ -43,21 +43,21 @@ func main() {
   if staticContentDirectoryExists {
 
       publicFS := http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
+      // Point the root endpoint at the filesystem created from the static content directory
       http.Handle("/static/", http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), fs))
     
   } else {
 
       // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
       publicFS, err := fs.Sub(public, "public")
+      // Point the root endpoint at the filesystem created from the 'public' directory
+      http.Handle("/", http.FileServer(http.FS(publicFS)))
   }
 
   // Throw an error if the filesystem cannot be created
   if err != nil {
     log.Fatal(err)
   }
-
-  // Point the root endpoint at the filesystem created from the 'public' directory
-  http.Handle("/", http.FileServer(http.FS(publicFS)))
 
   // Serve the static content
   // The return value of the `http.ListenAndServe()` command is always logged as a fatal error
