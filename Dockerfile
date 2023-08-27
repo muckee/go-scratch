@@ -7,8 +7,8 @@ RUN apk add --no-cache git \
                        ca-certificates
  
 # Add user here. Cannot be added in scratch
-RUN /bin/bash -c 'addgroup -S ${USER_NAME} \
-    && adduser -S -u 10000 -g ${USER_NAME} ${USER_NAME}'
+RUN addgroup -S $USER_NAME \
+    && adduser -S -u 10000 -g $USER_NAME $USER_NAME
 
 # Install Go modules
 WORKDIR /src
