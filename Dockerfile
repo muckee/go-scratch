@@ -15,9 +15,10 @@ WORKDIR /src
 COPY ./go.mod ./
 RUN go mod download
 
+# Copy static files from repository
 COPY ./ ./
  
-Run tests
+# Run tests
 RUN CGO_ENABLED=0 go test -timeout 30s -v github.com/gbaeke/go-template/pkg/api
  
 # Build the executable
@@ -30,12 +31,14 @@ FROM scratch AS final
 
 COPY --from=build /src/cmd/app /app
  
-# copy ca certs
+# Copy CA certs
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
  
-copy users
+# Copy users
 COPY --from=build /etc/passwd /etc/passwd
 
+# Create user
 USER ${USER_NAME}
- 
+
+ # Run the executable
 ENTRYPOINT ["/app"]
