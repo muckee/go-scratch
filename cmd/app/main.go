@@ -35,15 +35,15 @@ func main() {
 
   // If the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable is not set, use the default static content directory
   if !staticContentDirectoryIsSet {
-    staticContentDirectory = "/static"
+    staticContentDirectory = "static"
   }
 
   staticContentDirectoryExists, err := exists(staticContentDirectory)
 
   if staticContentDirectoryExists {
 
-      publicFS := http.FileServer(http.Dir("static"))
-      http.Handle("/static/", http.StripPrefix("/static/", fs))
+      publicFS := http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
+      http.Handle("/static/", http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), fs))
     
   } else {
 
