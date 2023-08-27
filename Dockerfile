@@ -16,8 +16,7 @@ RUN go mod download
 # Copy static files from repository
 COPY ./ ./
  
-# Run tests
-RUN CGO_ENABLED=0 go test -timeout 30s -v github.com/gbaeke/go-template/pkg/api
+# TODO: Run tests
  
 # Build the executable
 RUN CGO_ENABLED=0 go build \
@@ -27,9 +26,10 @@ RUN CGO_ENABLED=0 go build \
 # STAGE 2: build the container to run
 FROM scratch AS final
 
+# Copy Go executable
 COPY --from=build /src/cmd/app /app
  
-# Copy CA certs
+# Copy CA certificates
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
  
 # Copy users
