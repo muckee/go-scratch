@@ -42,8 +42,8 @@ func main() {
 
   if staticContentDirectoryExists {
 
-      // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
-      publicFS, err := fs.Sub(public, staticContentDirectory)
+      publicFS := http.FileServer(http.Dir("static"))
+      http.Handle("/static/", http.StripPrefix("/static/", fs))
     
   } else {
 
