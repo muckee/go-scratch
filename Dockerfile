@@ -7,8 +7,8 @@ RUN apk add --no-cache git \
                        ca-certificates
  
 # Add user here. Cannot be added in scratch
-RUN addgroup -S goserver \
-    && adduser -S -u 10000 -g goserver goserver
+RUN addgroup -S ${USER_NAME} \
+    && adduser -S -u 10000 -g ${USER_NAME} ${USER_NAME}
 
 # Install Go modules
 WORKDIR /src
@@ -17,13 +17,13 @@ RUN go mod download
 
 COPY ./ ./
  
-# Run tests
-# RUN CGO_ENABLED=0 go test -timeout 30s -v github.com/gbaeke/go-template/pkg/api
+Run tests
+RUN CGO_ENABLED=0 go test -timeout 30s -v github.com/gbaeke/go-template/pkg/api
  
 # Build the executable
-# RUN CGO_ENABLED=0 go build \
-#     -installsuffix 'static' \
-#     -o /app ./cmd/app
+RUN CGO_ENABLED=0 go build \
+    -installsuffix 'static' \
+    -o /app ./cmd/app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
@@ -33,9 +33,9 @@ COPY --from=build /src/cmd/app /app
 # copy ca certs
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
  
-# copy users from builder (use from=0 for illustration purposes)
-COPY --from=0 /etc/passwd /etc/passwd
+copy users
+COPY --from=build /etc/passwd /etc/passwd
 
-USER goserver
+USER ${USER_NAME}
  
-ENTRYPOINT ["go run", "/app/main.go"]
+ENTRYPOINT ["/app"]
