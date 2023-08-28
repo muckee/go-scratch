@@ -11,6 +11,8 @@ import (
 
 //go:embed public
 var public embed.FS
+
+//io:fs publicFS
 var publicFS fs.Sub
 
 // exists returns whether the given file or directory exists
