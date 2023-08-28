@@ -30,6 +30,10 @@ func main() {
     port = "9223"
   }
 
+  // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
+  publicFS, err := fs.Sub(public, "public")
+  httpFS, err := http.FileServer(http.FS(publicFS))
+
   // Attempt to get the build directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable
   staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
 
@@ -40,19 +44,14 @@ func main() {
 
   staticContentDirectoryExists, err := exists(staticContentDirectory)
 
+  // If the static content directory exists, assign it as the value of `publicFS`
   if staticContentDirectoryExists {
-
       publicFS := http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
-      // Point the root endpoint at the filesystem created from the static content directory
-      http.Handle("/static/", http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), fs))
-    
-  } else {
-
-      // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
-      publicFS, err := fs.Sub(public, "public")
-      // Point the root endpoint at the filesystem created from the 'public' directory
-      http.Handle("/", http.FileServer(http.FS(publicFS)))
+      httpFS, err := http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), fs)
   }
+
+  // Point the root endpoint at the chosen filesystem
+  http.Handle("/", httpFS)
 
   // Throw an error if the filesystem cannot be created
   if err != nil {
