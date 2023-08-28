@@ -12,8 +12,7 @@ import (
 //go:embed public
 var public embed.FS
 
-//io:fs publicFS
-var publicFS fs.Sub
+var publicFS
 
 // exists returns whether the given file or directory exists
 func exists(path string) (bool, error) {
