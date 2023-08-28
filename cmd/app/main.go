@@ -22,17 +22,19 @@ func exists(path string) (bool, error) {
 
 func main() {
 
-  // Attempt to get the port number from the `GOLANG_PORT` environment variable
+  // Step 1) Determine which port should be used to serve static content
+
+  // Attempt to retrieve the port from env vars
   port, portIsSet := os.LookupEnv("GOLANG_PORT")
 
-  // If the `GOLANG_PORT` environment variable is not set, use the default port
+  // If no port has been set via env vars, use `9223` as the fallback port
   if !portIsSet {
     port = "9223"
   }
 
-  // Using `fs.Sub()`, create a filesystem which uses the 'public' directory as its root
+  // Step 2) Determine the location of the public filesystem
   publicFS, err := fs.Sub(public, "public")
-  httpFS, err := http.FileServer(http.FS(publicFS))
+  httpFS := http.FileServer(http.FS(publicFS))
 
   // Attempt to get the build directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable
   staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
@@ -42,6 +44,7 @@ func main() {
     staticContentDirectory = "static"
   }
 
+  // Check if the static content directory exists
   staticContentDirectoryExists, err := exists(staticContentDirectory)
 
   // If the static content directory exists, assign it as the value of `publicFS`
