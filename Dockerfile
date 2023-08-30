@@ -36,7 +36,7 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /etc/passwd /etc/passwd
 
 # Create user
-USER ${USER_NAME}
+USER goserver
 
  # Run the executable
 ENTRYPOINT ["/app"]
