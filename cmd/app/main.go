@@ -12,10 +12,6 @@ import (
 //go:embed public
 var public embed.FS
 
-var publicFS fs.FS
-
-var httpFS http.Handler
-
 // exists returns whether the given file or directory exists
 func exists(path string) (bool, error) {
     _, err := os.Stat(path)
@@ -53,8 +49,8 @@ func main() {
 
   // If the static content directory exists, assign it as the value of `publicFS`
   if staticContentDirectoryExists {
-      publicFS := http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
-      httpFS := http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), publicFS)
+      publicFS = http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
+      httpFS = http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), publicFS)
   }
 
   // Point the root endpoint at the chosen filesystem
