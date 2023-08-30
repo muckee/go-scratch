@@ -54,7 +54,7 @@ func main() {
   // If the static content directory exists, assign it as the value of `publicFS`
   if staticContentDirectoryExists {
       publicFS := http.FileServer(http.Dir(fmt.Sprintf(":%s", staticContentDirectory)))
-      httpFS := http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), fs)
+      httpFS := http.StripPrefix(fmt.Sprintf("/:%s/", staticContentDirectory), publicFS)
   }
 
   // Point the root endpoint at the chosen filesystem
