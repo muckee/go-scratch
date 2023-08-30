@@ -14,6 +14,8 @@ var public embed.FS
 
 var publicFS fs.FS
 
+var httpFS http.Handler
+
 // exists returns whether the given file or directory exists
 func exists(path string) (bool, error) {
     _, err := os.Stat(path)
