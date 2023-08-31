@@ -21,7 +21,8 @@ COPY ./ ./
 # Build the executable
 RUN CGO_ENABLED=0 go build \
     -installsuffix 'static' \
-    -o /app ./cmd/app
+    -o /app ./cmd/app && \
+    chmod +x /app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
@@ -33,7 +34,7 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /etc/passwd /etc/passwd
 
 # Copy Go executable
-COPY --chown=goserver:goserver --from=build /src/cmd/app /app
+COPY --from=build /src/cmd/app /app
 
 # Create user
 USER goserver
