@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 go build \
 FROM scratch AS final
 
 # Copy Go executable
-COPY --from=build /src/cmd/app /app
+COPY --chown=goserver:goserver --from=build /src/cmd/app /app
  
 # Copy CA certificates
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
