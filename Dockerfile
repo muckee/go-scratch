@@ -25,15 +25,15 @@ RUN CGO_ENABLED=0 go build \
  
 # STAGE 2: build the container to run
 FROM scratch AS final
-
-# Copy Go executable
-COPY --chown=goserver:goserver --from=build /src/cmd/app /app
  
 # Copy CA certificates
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
  
 # Copy users
 COPY --from=build /etc/passwd /etc/passwd
+
+# Copy Go executable
+COPY --chown=goserver:goserver --from=build /src/cmd/app /app
 
 # Create user
 USER goserver
