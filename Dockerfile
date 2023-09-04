@@ -23,7 +23,7 @@ RUN CGO_ENABLED=0 go build \
     -installsuffix 'static' \
     -o /app ./cmd/app && \
     chmod +x /app && \
-    chown goserver:goserver /app
+    chown 10000:goserver /app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
