@@ -6,7 +6,7 @@ RUN apk add --no-cache git \
                        ca-certificates
  
 # Add user here. Cannot be added in scratch
-RUN [ "sh", "-c", "addgroup -S goserver && adduser -S -u 10000 -g goserver goserver" ]
+RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
 
 # Install Go modules
 WORKDIR /src
@@ -21,9 +21,9 @@ COPY ./ ./
 # Build the executable
 RUN CGO_ENABLED=0 go build \
     -installsuffix 'static' \
-    -o /app ./cmd/app && \
-    chmod +x /app && \
-    chown 10000:goserver /app
+    -o /app ./cmd/app
+    # chmod +x /app && \
+    # chown 10000:goserver /app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
