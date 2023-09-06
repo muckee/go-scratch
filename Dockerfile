@@ -9,7 +9,7 @@ RUN apk add --no-cache coreutils \
                        ca-certificates
  
 # Add 'goserver' user
-RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
+RUN addgroup -S goserver && adduser -S -u 1000 -g goserver goserver
 
 # Set the current working directory
 WORKDIR /src
@@ -29,8 +29,8 @@ RUN CGO_ENABLED=0 go build \
     -o /app ./cmd/app
 
 # Set permissions for the executable
-RUN chmod +x /app && \
-    chown 10000:goserver /app
+RUN chmod 770 /app && \
+    chown 1000:goserver /app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
