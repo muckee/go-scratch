@@ -24,7 +24,7 @@ COPY ./ ./
 # TODO: Run tests
 
 # Set permissions for the static files 
-RUN chmod -R 770 /app && \
+RUN chmod -R 770 ./cmd/app && \
     chown -R 1000:goserver ./cmd/app
  
 # Build the executable
