@@ -4,8 +4,7 @@ ARG GO_VERSION=1.20
 FROM golang:${GO_VERSION}-alpine AS build
 
 # Prepare the environment
-RUN apk add --no-cache coreutils \
-                       git \
+RUN apk add --no-cache git \
                        ca-certificates
  
 # Add 'goserver' user
@@ -38,10 +37,6 @@ RUN chmod 770 /app && \
  
 # STAGE 2: build the container to run
 FROM scratch AS final
-
-
-# DEV: Copy 'ls' from the build image into the final image
-COPY --from=build /bin/ls /ls
  
 # Copy CA certificates
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
