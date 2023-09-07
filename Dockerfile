@@ -8,7 +8,7 @@ RUN apk add --no-cache git \
                        ca-certificates
  
 # Add 'goserver' user
-RUN addgroup -S goserver && adduser -S -u 1000 -g goserver goserver
+RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
 
 # Set the current working directory
 WORKDIR /src
@@ -24,7 +24,7 @@ COPY ./ ./
 
 # Set permissions for the static files 
 RUN chmod -R 770 ./cmd/app && \
-    chown -R 1000:goserver ./cmd/app
+    chown -R 10000:goserver ./cmd/app
  
 # Build the executable
 RUN CGO_ENABLED=0 go build \
@@ -33,7 +33,7 @@ RUN CGO_ENABLED=0 go build \
 
 # Set permissions for the executable
 RUN chmod 770 /app && \
-    chown 1000:goserver /app
+    chown 10000:goserver /app
  
 # STAGE 2: build the container to run
 FROM scratch AS final
@@ -45,7 +45,7 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /etc/passwd /etc/passwd
 
 # Copy Go executable
-COPY --from=build /src/cmd/app /app
+COPY --from=build /app /app
 
 # Create user
 USER goserver
