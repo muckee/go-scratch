@@ -22,6 +22,10 @@ RUN go mod download
 COPY ./ ./
  
 # TODO: Run tests
+
+# Set permissions for the static files 
+RUN chmod -R 770 /app && \
+    chown -R 1000:goserver ./cmd/app
  
 # Build the executable
 RUN CGO_ENABLED=0 go build \
