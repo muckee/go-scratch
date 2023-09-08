@@ -22,10 +22,6 @@ COPY ./ ./
  
 # TODO: Run tests
 
-# Set permissions for the static files 
-RUN chmod -R 770 ./cmd/app && \
-    chown -R 10000:goserver ./cmd/app
- 
 # Build the executable
 RUN CGO_ENABLED=0 go build \
     -installsuffix 'static' \
