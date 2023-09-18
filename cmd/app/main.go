@@ -22,28 +22,27 @@ func exists(path string) (bool, error) {
 
 func main() {
 
-  // Retrieve the port from the `GOLANG_PORT` environment variable or use `:9123`
   debug, _ := os.LookupEnv("GOLANG_DEBUG")
 
-  // Step 1) Determine which port should be used to serve static content
+  basepath, basepathIsSet := os.LookupEnv("GOLANG_BASEPATH")
+  if !basepathIsSet {
+    basepath = "/"
+  }
 
-  // Retrieve the port from the `GOLANG_PORT` environment variable or use `:9123`
+  // Determine which port the application should be served on
   port, portIsSet := os.LookupEnv("GOLANG_PORT")
-
-  // If no port has been set via env vars, use `9223` as the fallback port
   if !portIsSet {
     port = "9123"
   }
-
-  // Step 2) Determine the location of the public filesystem
-  publicFS, err := fs.Sub(public, "public")
-  httpFS := http.FileServer(http.FS(publicFS))
 
   // Get the path of the static content directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable or use `/static`
   staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
   if !staticContentDirectoryIsSet {
     staticContentDirectory = "/static"
   }
+
+  publicFS, err := fs.Sub(public, "public")
+  httpFS := http.FileServer(http.FS(publicFS))
 
   // If the static content directory exists, assign it as the public directory
   staticContentDirectoryExists, err := exists(staticContentDirectory)
@@ -60,11 +59,11 @@ func main() {
     }
 
 
-    http.StripPrefix("/nft-generator/", httpFS).ServeHTTP(w, r)
-  	// httpFS.ServeHTTP(w, r)
+    // http.StripPrefix("/nft-generator/", httpFS).ServeHTTP(w, r)
+  	httpFS.ServeHTTP(w, r)
   }
 
-  http.HandleFunc("/", handleRequest)
+  http.HandleFunc(basepath, handleRequest)
   // http.Handle("/", httpFS)
 
   // Check for handling errors
