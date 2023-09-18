@@ -58,7 +58,8 @@ func main() {
     }
 
 
-  	httpFS.ServeHTTP(w, r)
+    http.StripPrefix("/nft-generator/", httpFS).ServeHTTP(w, r)
+  	// httpFS.ServeHTTP(w, r)
   }
 
   http.HandleFunc("/", handleRequest)
