@@ -61,8 +61,7 @@ func main() {
   if debug == "true" {
     // Handle all requests
     http.Handle("/", logRequests(httpFS))
-  }
-  else {
+  } else {
     // Handle all requests
     http.Handle("/", logRequests(httpFS))
   }
