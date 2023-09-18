@@ -20,6 +20,13 @@ func exists(path string) (bool, error) {
     return false, err
 }
 
+func logRequests(f fctHandler) fctHandler {
+	return func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
+		f(w, r)
+	}
+}
+
 func main() {
 
   // Step 1) Determine which port should be used to serve static content
@@ -48,8 +55,17 @@ func main() {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
-  // Handle all requests
-  http.Handle("/", httpFS)
+  // Retrieve the port from the `GOLANG_PORT` environment variable or use `:9123`
+  debug, debugIsSet := os.LookupEnv("GOLANG_DEBUG")
+
+  if debug == "true" {
+    // Handle all requests
+    http.Handle("/", logRequests(httpFS))
+  }
+  else {
+    // Handle all requests
+    http.Handle("/", logRequests(httpFS))
+  }
 
   // Check for handling errors
   if err != nil {
