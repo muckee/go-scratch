@@ -58,11 +58,11 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-    if basepath == "/" {
+    // if basepath == "/" {
     	httpFS.ServeHTTP(w, r)
-    } else {
-      http.StripPrefix("/nft-generator/", httpFS).ServeHTTP(w, r)
-    }
+    // } else {
+    //   http.StripPrefix(fmt.Sprintf("%s/", basepath), httpFS).ServeHTTP(w, r)
+    // }
   }
 
   http.HandleFunc(basepath, handleRequest)
