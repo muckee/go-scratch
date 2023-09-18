@@ -22,10 +22,6 @@ func exists(path string) (bool, error) {
 
 func loggerMiddleware(next http.Handler) http.Handler {
    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-      myResponseWriter := &MyResponseWriter{
-         ResponseWriter: w,
-         buf:            &bytes.Buffer{},
-      }
  
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
 	   
