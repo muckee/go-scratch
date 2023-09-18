@@ -20,7 +20,7 @@ func exists(path string) (bool, error) {
     return false, err
 }
 
-func logRequests(f http.HandlerFunc) http.HandlerFunc {
+func logRequests(f http.Handler) http.Handler {
 	return func(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
 		f(w, r)
