@@ -57,7 +57,8 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-    http.Handle("/", httpFS)
+
+  	httpFS.ServeHTTP(w, r)
   }
 
   http.HandleFunc("/", handleRequest)
