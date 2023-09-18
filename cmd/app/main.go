@@ -51,16 +51,16 @@ func main() {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
-	handleRequest := func(w http.ResponseWriter, _ *http.Request) {
+  handleRequest := func(w http.ResponseWriter, r *http.Request) {
 
     if debug == 'true' {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
     http.Handle("/", httpFS)
-	}
-  
-	http.HandleFunc("/", handleRequest)
+  }
+
+  http.HandleFunc("/", handleRequest)
   // http.Handle("/", httpFS)
 
   // Check for handling errors
