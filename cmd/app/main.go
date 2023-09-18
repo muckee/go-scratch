@@ -53,7 +53,7 @@ func main() {
 
   handleRequest := func(w http.ResponseWriter, r *http.Request) {
 
-    if debug == 'true' {
+    if debug == "true" {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
