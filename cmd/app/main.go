@@ -26,7 +26,7 @@ func main() {
   debug, _ := os.LookupEnv("GOLANG_DEBUG")
 
   // Determine URL basepath to be used as HTTP route
-  basepath, basepathIsSet := os.LookupEnv("GOLANG_BASEPATH")
+  basepath, basepathIsSet := os.LookupEnv("GOLANG_URL_PREFIX")
   if !basepathIsSet {
     basepath = "/"
   }
@@ -58,14 +58,14 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-    // if basepath == "/" {
+    if basepath == "/" {
     	httpFS.ServeHTTP(w, r)
-    // } else {
-    //   http.StripPrefix(fmt.Sprintf("%s/", basepath), httpFS).ServeHTTP(w, r)
-    // }
+    } else {
+      http.StripPrefix(fmt.Sprintf("%s/", basepath), httpFS).ServeHTTP(w, r)
+    }
   }
 
-  http.HandleFunc(basepath, handleRequest)
+  http.HandleFunc("/", handleRequest)
 
   // Check for handling errors
   if err != nil {
