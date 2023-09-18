@@ -22,8 +22,10 @@ func exists(path string) (bool, error) {
 
 func main() {
 
+  // Determine whether application is in debug mode
   debug, _ := os.LookupEnv("GOLANG_DEBUG")
 
+  // Determine URL basepath to be used as HTTP route
   basepath, basepathIsSet := os.LookupEnv("GOLANG_BASEPATH")
   if !basepathIsSet {
     basepath = "/"
@@ -52,8 +54,6 @@ func main() {
 
   handleRequest := func(w http.ResponseWriter, r *http.Request) {
 
-    fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
-
     if debug == "true" {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
@@ -66,7 +66,6 @@ func main() {
   }
 
   http.HandleFunc(basepath, handleRequest)
-  // http.Handle("/", httpFS)
 
   // Check for handling errors
   if err != nil {
