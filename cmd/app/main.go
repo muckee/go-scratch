@@ -56,7 +56,7 @@ func main() {
   }
 
   // Retrieve the port from the `GOLANG_PORT` environment variable or use `:9123`
-  debug, debugIsSet := os.LookupEnv("GOLANG_DEBUG")
+  debug, _ := os.LookupEnv("GOLANG_DEBUG")
 
   if debug == "true" {
     // Handle all requests
