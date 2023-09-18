@@ -20,13 +20,19 @@ func exists(path string) (bool, error) {
     return false, err
 }
 
-func logRequests(f http.Handler) http.Handler {
-	return func(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
-		f(w, r)
-	}
+func loggerMiddleware(next http.Handler) http.Handler {
+   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+      myResponseWriter := &MyResponseWriter{
+         ResponseWriter: w,
+         buf:            &bytes.Buffer{},
+      }
+ 
+      fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
+	   
+      // Here we are pssing our custom response writer to the next http handler.
+      next.ServeHTTP(w, r)
+   })
 }
-
 func main() {
 
   // Step 1) Determine which port should be used to serve static content
@@ -60,10 +66,10 @@ func main() {
 
   if debug == "true" {
     // Handle all requests
-    http.Handle("/", logRequests(httpFS))
+    http.With(loggerMiddleware).Handle("/", logRequests(httpFS))
   } else {
     // Handle all requests
-    http.Handle("/", logRequests(httpFS))
+    http.Handle("/", httpFS)
   }
 
   // Check for handling errors
