@@ -56,15 +56,17 @@ func getStaticContentDirectory() string {
 func directoryIsValid(path string) bool {
 
   // If the static content directory exists, assign it as the public directory
-  staticContentDirectoryExists, err := exists(staticContentDirectory)
+  directoryExists, err := exists(path)
 
   if err {
     return false
   }
 
-  if !staticContentDirectoryExists {
+  if !directoryExists {
     return false
   }
+
+  return true
 }
 
 func main() {
