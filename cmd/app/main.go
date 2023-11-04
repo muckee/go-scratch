@@ -20,6 +20,52 @@ func exists(path string) (bool, error) {
     return false, err
 }
 
+func isGolangApplication(path string) bool {
+    file, err := os.Open(path)
+    if err != nil {
+        return false
+    }
+    defer file.Close()
+
+    // Define the Golang binary signature (magic number)
+    golangMagicNumber := []byte{0x7f, 'E', 'L', 'F'}
+
+    // Read the first 4 bytes of the file
+    buf := make([]byte, 4)
+    _, err = file.Read(buf)
+    if err != nil {
+        return false
+    }
+
+    // Compare the read bytes with the Golang binary signature
+    return bytes.Equal(buf, golangMagicNumber)
+}
+
+func getStaticContentDirectory() string {
+
+  // Get the path of the static content directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable or use `/static`
+  staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
+  if !staticContentDirectoryIsSet {
+    staticContentDirectory = "/static"
+  }
+
+  return staticContentDirectory
+}
+
+func directoryIsValid(path string) bool {
+
+  // If the static content directory exists, assign it as the public directory
+  staticContentDirectoryExists, err := exists(staticContentDirectory)
+
+  if err {
+    return false
+  }
+
+  if !staticContentDirectoryExists {
+    return false
+  }
+}
+
 func main() {
 
   // Determine whether application is in debug mode
@@ -38,17 +84,13 @@ func main() {
   }
 
   // Get the path of the static content directory from the `GOLANG_STATIC_CONTENT_DIRECTORY` environment variable or use `/static`
-  staticContentDirectory, staticContentDirectoryIsSet := os.LookupEnv("GOLANG_STATIC_CONTENT_DIRECTORY")
-  if !staticContentDirectoryIsSet {
-    staticContentDirectory = "/static"
-  }
+  staticContentDirectory := getStaticContentDirectory()
 
   publicFS, err := fs.Sub(public, "public")
+
   httpFS := http.FileServer(http.FS(publicFS))
 
-  // If the static content directory exists, assign it as the public directory
-  staticContentDirectoryExists, err := exists(staticContentDirectory)
-  if staticContentDirectoryExists {
+  if directoryIsValid(staticContentDirectory) {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
@@ -58,7 +100,22 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-    if basepath == "/" {
+   if r.URL.Path == "/app" {
+        if isGolangApplication("/app") {
+            // Execute the Golang application as a separate process
+            cmd := exec.Command("/app")
+            cmd.Stdout = w
+            cmd.Stderr = w
+            err := cmd.Run()
+            if err != nil {
+                // Handle the error if needed
+                http.Error(w, "Error running the Golang application", http.StatusInternalServerError)
+            }
+        } else {
+            // Return an error response or handle it as needed
+            http.Error(w, "Failed to execute: not a valid executable", http.StatusNotFound)
+        }
+    } else if basepath == "/" {
     	httpFS.ServeHTTP(w, r)
     } else {
       http.StripPrefix(fmt.Sprintf("%s", basepath), httpFS).ServeHTTP(w, r)
