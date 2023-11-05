@@ -106,7 +106,7 @@ func main() {
    if r.URL.Path == "/app" {
         if isGolangApplication("/app") {
             // Execute the Golang application as a separate process
-            cmd := exec.Command("/app")
+            cmd := os.exec.Command("/app")
             cmd.Stdout = w
             cmd.Stderr = w
             err := cmd.Run()
