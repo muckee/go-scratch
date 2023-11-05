@@ -8,6 +8,7 @@ import (
   "log"
   "net/http"
   "os"
+  "os/exec"
 )
 
 //go:embed public
@@ -106,7 +107,7 @@ func main() {
    if r.URL.Path == "/app" {
         if isGolangApplication("/app") {
             // Execute the Golang application as a separate process
-            cmd := os.exec.Command("/app")
+            cmd := exec.Command("/app")
             cmd.Stdout = w
             cmd.Stderr = w
             err := cmd.Run()
