@@ -6,9 +6,12 @@ FROM golang:${GO_VERSION}-alpine AS build
 # Prepare the environment
 RUN apk add --no-cache git \
                        ca-certificates
- 
-# Add 'goserver' user
-RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
+
+ # Create a group with a specific GID
+RUN addgroup $GO_USER_NAME --gid $GO_USER_ID
+
+# Create a user with a specific UID and assign them to the group
+RUN adduser $GO_USER_NAME --uid $GO_USER_ID --ingroup $GO_USER_NAME --home /home/$GO_USER_NAME --disabled-password --gecos ""
 
 # Set the current working directory
 WORKDIR /src
