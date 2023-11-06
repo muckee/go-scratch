@@ -7,9 +7,6 @@ FROM golang:${GO_VERSION}-alpine AS build
 RUN apk add --no-cache git \
                        ca-certificates
 
- # Create a group with a specific GID
-RUN addgroup goserver --gid 10000
-
 # Create a user with a specific UID and assign them to the group
 RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
 
