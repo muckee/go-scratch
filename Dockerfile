@@ -8,10 +8,10 @@ RUN apk add --no-cache git \
                        ca-certificates
 
  # Create a group with a specific GID
-RUN addgroup $GO_USER_NAME --gid $GO_USER_ID
+RUN addgroup goserver --gid 10000
 
 # Create a user with a specific UID and assign them to the group
-RUN adduser $GO_USER_NAME --uid $GO_USER_ID --ingroup $GO_USER_NAME --home /home/$GO_USER_NAME --disabled-password --gecos ""
+RUN adduser goserver --uid 10000 --ingroup goserver --home /home/goserver --disabled-password --gecos ""
 
 # Set the current working directory
 WORKDIR /src
