@@ -11,7 +11,7 @@ RUN apk add --no-cache git \
 RUN addgroup goserver --gid 10000
 
 # Create a user with a specific UID and assign them to the group
-RUN adduser goserver --uid 10000 --ingroup goserver --home /home/goserver --disabled-password --gecos ""
+RUN addgroup -S goserver && adduser -S -u 10000 -g goserver goserver
 
 # Set the current working directory
 WORKDIR /src
