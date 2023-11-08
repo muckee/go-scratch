@@ -104,10 +104,10 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-   if r.URL.Path == "/app" {
-        if isGolangApplication("/app") {
+   if r.URL.Path == "/goapp/app" {
+        if isGolangApplication("/goapp/app") {
             // Execute the Golang application as a separate process
-            cmd := exec.Command("/app")
+            cmd := exec.Command("/goapp/app")
             cmd.Stdout = w
             cmd.Stderr = w
             err := cmd.Run()
