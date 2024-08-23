@@ -99,49 +99,56 @@ func main() {
   }
 
   handleRequest := func(w http.ResponseWriter, r *http.Request) {
-      if debug == "true" {
-          fmt.Fprintf(os.Stderr, "Request received: %s\n", r.URL.Path)
-      }
-  
-      // Check if the request is for the Go application
-      if r.URL.Path == "/goapp/app" {
-          if isGolangApplication("/goapp/app") {
-              // Execute the Golang application as a separate process
-              cmd := exec.Command("/goapp/app")
-              cmd.Stdout = w
-              cmd.Stderr = w
-              err := cmd.Run()
-              if err != nil {
-                  // Handle the error if needed
-                  http.Error(w, "Error running the Golang application", http.StatusInternalServerError)
-              }
-          } else {
-              // Return an error response if it's not a valid executable
-              http.Error(w, "Failed to execute: not a valid executable", http.StatusNotFound)
-          }
-          return
-      }
-  
-      // Check if the requested path corresponds to a file or directory
-      requestedPath := fmt.Sprintf("%s%s", staticContentDirectory, r.URL.Path)
-      fileExists, err := exists(requestedPath)
-  
-      if err != nil || !fileExists {
-          if r.URL.Path != "/" {
-              // If the file doesn't exist and it's not the root, serve the index.html
-              // This allows Next.js client-side routing to handle the route
-              indexPath := fmt.Sprintf("%s/index.html", staticContentDirectory)
-              http.ServeFile(w, r, indexPath)
-              return
-          }
-      }
-  
-      // If a file or directory exists, serve it normally
-      if basepath == "/" {
-          httpFS.ServeHTTP(w, r)
-      } else {
-          http.StripPrefix(fmt.Sprintf("%s", basepath), httpFS).ServeHTTP(w, r)
-      }
+    if debug == "true" {
+        fmt.Fprintf(os.Stderr, "Request received: %s\n", r.URL.Path)
+    }
+
+    // Check if the request is for the Go application
+    if r.URL.Path == "/goapp/app" {
+        if isGolangApplication("/goapp/app") {
+            // Execute the Golang application as a separate process
+            cmd := exec.Command("/goapp/app")
+            cmd.Stdout = w
+            cmd.Stderr = w
+            err := cmd.Run()
+            if err != nil {
+                // Handle the error if needed
+                http.Error(w, "Error running the Golang application", http.StatusInternalServerError)
+            }
+        } else {
+            // Return an error response if it's not a valid executable
+            http.Error(w, "Failed to execute: not a valid executable", http.StatusNotFound)
+        }
+        return
+    }
+
+    // Attempt to serve static files first
+    requestedPath := fmt.Sprintf("%s%s", staticContentDirectory, r.URL.Path)
+    fileExists, err := exists(requestedPath)
+
+    if err == nil && fileExists {
+        // If the requested file exists, serve it
+        if basepath == "/" {
+            httpFS.ServeHTTP(w, r)
+        } else {
+            http.StripPrefix(fmt.Sprintf("%s", basepath), httpFS).ServeHTTP(w, r)
+        }
+        return
+    }
+
+    // If the file doesn't exist and the request is not for a file or API, serve the index.html
+    if r.URL.Path == "/" || !fileExists {
+        indexPath := fmt.Sprintf("%s/index.html", staticContentDirectory)
+        http.ServeFile(w, r, indexPath)
+        return
+    }
+
+    // If none of the above conditions are met, serve the request normally
+    if basepath == "/" {
+        httpFS.ServeHTTP(w, r)
+    } else {
+        http.StripPrefix(fmt.Sprintf("%s", basepath), httpFS).ServeHTTP(w, r)
+    }
   }
 
 
