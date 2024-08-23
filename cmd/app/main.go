@@ -4,11 +4,13 @@ import (
   "bytes"
   "embed"
   "fmt"
+  "io"
   "io/fs"
   "log"
   "net/http"
   "os"
   "os/exec"
+  "strings"
 )
 
 //go:embed public
@@ -98,20 +100,10 @@ func main() {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
-  // Create a reverse proxy for /api/ requests
-  apiProxy := &httputil.ReverseProxy{
-      Director: func(req *http.Request) {
-          req.URL.Scheme = "http"
-          req.URL.Host = "localhost:3000" // Node.js API server address
-          req.Header.Set("X-Forwarded-Host", req.Host)
-          req.Header.Set("X-Forwarded-For", req.RemoteAddr)
-          req.Header.Set("X-Forwarded-Proto", "http")
-      },
-      ModifyResponse: func(resp *http.Response) error {
-          resp.Header.Del("X-Powered-By")
-          return nil
-      },
-  }
+
+  // Define the service name and port for the Next.js API
+  apiServiceName := "actions-thugnerdz"  // Replace with your service name
+  apiServicePort := "3000"               // Port on which the API is exposed
 
   handleRequest := func(w http.ResponseWriter, r *http.Request) {
 
@@ -125,7 +117,24 @@ func main() {
         return
     }
 
-   if r.URL.Path == "/goapp/app" {
+    // Check if the request is for the API
+    if strings.HasPrefix(r.URL.Path, "/api/") {
+        // Forward API requests to the Next.js API server
+        apiURL := fmt.Sprintf("http://%s:%s", apiServiceName, apiServicePort)
+        apiURL = apiURL + r.URL.Path
+        resp, err := http.Get(apiURL)
+        if err != nil {
+            http.Error(w, "Error forwarding request to API", http.StatusInternalServerError)
+            return
+        }
+        defer resp.Body.Close()
+        w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+        w.WriteHeader(resp.StatusCode)
+        io.Copy(w, resp.Body)
+        return
+    }
+
+    if r.URL.Path == "/goapp/app" {
         if isGolangApplication("/goapp/app") {
             // Execute the Golang application as a separate process
             cmd := exec.Command("/goapp/app")
