@@ -98,10 +98,31 @@ func main() {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
+  // Create a reverse proxy for /api/ requests
+  apiProxy := &httputil.ReverseProxy{
+      Director: func(req *http.Request) {
+          req.URL.Scheme = "http"
+          req.URL.Host = "localhost:3000" // Node.js API server address
+          req.Header.Set("X-Forwarded-Host", req.Host)
+          req.Header.Set("X-Forwarded-For", req.RemoteAddr)
+          req.Header.Set("X-Forwarded-Proto", "http")
+      },
+      ModifyResponse: func(resp *http.Response) error {
+          resp.Header.Del("X-Powered-By")
+          return nil
+      },
+  }
+
   handleRequest := func(w http.ResponseWriter, r *http.Request) {
 
     if debug == "true" {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
+    }
+
+    // Handle API requests
+    if r.URL.Path == "/api/" || r.URL.Path[:5] == "/api/" {
+        apiProxy.ServeHTTP(w, r)
+        return
     }
 
    if r.URL.Path == "/goapp/app" {
