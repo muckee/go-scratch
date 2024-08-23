@@ -98,7 +98,7 @@ func main() {
       httpFS = http.FileServer(http.Dir(fmt.Sprintf("%s", staticContentDirectory)))
   }
 
-  func handleRequest(w http.ResponseWriter, r *http.Request) {
+  handleRequest := func(w http.ResponseWriter, r *http.Request) {
       if debug == "true" {
           fmt.Fprintf(os.Stderr, "Request received: %s\n", r.URL.Path)
       }
