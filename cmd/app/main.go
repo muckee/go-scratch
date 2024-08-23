@@ -140,13 +140,16 @@ func main() {
         http.ServeFile(w, r, indexPath)
         return
     }
-    
-    // Default to Next.js handling for unknown routes
-    if basepath == "/" {
-        httpFS.ServeHTTP(w, r)
-    } else {
-        http.StripPrefix(fmt.Sprintf("%s", basepath), httpFS).ServeHTTP(w, r)
-    }
+
+    // Serve `index.html` for client-side routing
+		if basepath == "/" {
+			indexPath := filepath.Join(staticContentDirectory, "index.html")
+			http.ServeFile(w, r, indexPath)
+		} else {
+			// Remove the basepath prefix and serve index.html
+			r.URL.Path = filepath.Join(basepath, "index.html")
+			http.ServeFile(w, r, filepath.Join(staticContentDirectory, "index.html"))
+		}
   }
 
 
