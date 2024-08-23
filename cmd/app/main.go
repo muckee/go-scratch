@@ -111,12 +111,6 @@ func main() {
       fmt.Fprintf(os.Stderr, "Request received: %s", r.URL.Path)
     }
 
-    // Handle API requests
-    if r.URL.Path == "/api/" || r.URL.Path[:5] == "/api/" {
-        apiProxy.ServeHTTP(w, r)
-        return
-    }
-
     // Check if the request is for the API
     if strings.HasPrefix(r.URL.Path, "/api/") {
         // Forward API requests to the Next.js API server
